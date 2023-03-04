@@ -1,0 +1,44 @@
+import pandas as pd
+import os
+import datetime
+
+# Possibilita colocar a data no arquivo do Excel
+data = datetime.datetime.now()
+
+#Criando um data frame vazio com a estrutura final do Consolidado
+colunas = [ 
+    'Segmento',
+    'País',
+    'Produto',
+    'Qtde de Unidades Vendidas',
+    'Preço Unitário',
+    'Valor Total	Desconto',
+    'Valor Total c/ Desconto',
+    'Custo Total',
+    'Lucro',
+    'Data',
+    'Mês',
+    'Ano' ]
+consolidado = pd.DataFrame(columns=colunas)
+
+# buscar o nome dos arquivos a serem consolidados
+arquivos = os.listdir(r"C:\Users\Anderson\Downloads\dominando_python\Automação\Dados\planilhas")
+
+# realiza a consolidação dos arquivos (apenas.xlsx)
+for arquivo in arquivos:
+        dados_arquivo = arquivo.split('-')
+        segmento = dados_arquivo[0]
+        pais = dados_arquivo[1].replace('.xlsx', '')
+        
+      
+        df = pd.read_excel(f'C:\\Users\\Anderson\\Downloads\\dominando_python\\Automação\\Dados\\planilhas\\{arquivo}')
+        df.insert(0, 'Segmento', segmento)
+        df.insert(1, 'País', pais)
+
+        consolidado = consolidado.append(df)
+
+#formata a coluna data 
+        consolidado['Data'] = consolidado['Data'].dt.strftime('%d/%m/%Y')
+
+#exporta o dataframe consolidado para um arquivo Excel 
+        consolidado.to_excel(f"Report-consolidado-{data.strftime('%d-%m-%Y')}.xlsx", index=False, sheet_name = 'smeg consolidado')
